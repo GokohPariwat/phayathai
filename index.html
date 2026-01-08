@@ -17,6 +17,15 @@
         .number { font-size: 2.5rem; font-weight: 600; line-height: 1; display: block; }
         .label { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; display: block; }
         .footer-text { margin-top: 30px; font-size: 0.9rem; color: #777; }
+        
+        /* CSS สำหรับเครดิตผู้พัฒนา */
+        .credit { 
+            margin-top: 10px; 
+            font-size: 0.75rem; /* ขนาดเล็กกว่าข้อความปกติเล็กน้อย */
+            color: #aaa; /* สีเทาอ่อน เพื่อความสุภาพ */
+            font-weight: 300;
+        }
+
         @media (max-width: 480px) { .countdown { gap: 10px; } .time-box { width: 65px; padding: 10px; } .number { font-size: 1.8rem; } h1 { font-size: 1.5rem; } }
     </style>
 </head>
@@ -35,10 +44,10 @@
             <div class="time-box"><span class="number" id="seconds">00</span><span class="label">วินาที</span></div>
         </div>
         <div class="footer-text">สำนักงานเขตพญาไท</div>
+        
+        <div class="credit">Developed by Nitithon</div>
     </div>
     <script>
-        // แก้ไข: ระบุวันที่และเวลาแบบ ISO 8601 พร้อมระบุ Timezone +07:00 (Thailand)
-        // เพื่อให้เวลาตรงเป๊ะไม่ว่าจะเปิดจากประเทศไหน
         const targetDate = new Date('2026-02-08T08:00:00+07:00').getTime();
 
         function updateCountdown() {
@@ -61,12 +70,8 @@
             }
         }
         
-        // กำหนดตัวแปร interval เพื่อให้สามารถสั่งหยุด (clearInterval) ได้เมื่อถึงเวลา
         const interval = setInterval(updateCountdown, 1000);
         updateCountdown();
     </script>
 </body>
 </html>
-
-
-
