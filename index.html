@@ -36,12 +36,15 @@
     <div class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-indigo-900 flex items-center gap-2">
-                        <i data-lucide="layout-list" class="text-indigo-600"></i>
-                        ตรวจสอบรายชื่อ กปน. สำนักงานเขตพญาไท
-                    </h1>
-                    <p class="text-sm text-gray-500 mt-1">ค้นหารายชื่อเจ้าหน้าที่และสถานที่เลือกตั้ง</p>
+                <div class="flex items-center gap-4">
+                    <!-- โลโก้ มุมซ้ายบน -->
+                    <img src="Logo.png" alt="โลโก้" class="h-14 w-auto object-contain drop-shadow-sm" onerror="this.style.display='none'">
+                    <div>
+                        <h1 class="text-2xl font-bold text-purple-900 flex items-center gap-2">
+                            ตรวจสอบรายชื่อ กปน. สำนักงานเขตพญาไท
+                        </h1>
+                        <p class="text-sm text-gray-500 mt-1">ค้นหารายชื่อเจ้าหน้าที่และสถานที่เลือกตั้ง</p>
+                    </div>
                 </div>
                 
                 <div class="relative w-full md:w-96">
@@ -51,11 +54,11 @@
                     <input
                         type="text"
                         id="searchInput"
-                        class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-all shadow-sm"
+                        class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-xl leading-5 bg-purple-50/30 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 sm:text-sm transition-all shadow-sm"
                         placeholder="ค้นหา ชื่อ, หน่วย, สถานที่..."
                     />
                     <!-- ปุ่มกากบาทเคลียร์ข้อความ -->
-                    <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden text-gray-400 hover:text-purple-600 focus:outline-none transition-colors">
                         <i data-lucide="x" class="h-5 w-5"></i>
                     </button>
                 </div>
@@ -73,7 +76,7 @@
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6 flex items-center justify-between text-sm text-gray-500 bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm">
             <span id="resultCount">กำลังโหลดข้อมูล...</span>
-            <span class="text-xs bg-gray-100 px-2 py-1 rounded">แสดงผลแบบรายการ</span>
+            <span class="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded border border-purple-100">แสดงผลแบบรายการ</span>
         </div>
 
         <div id="cardContainer" class="flex flex-col gap-6">
@@ -97,7 +100,7 @@
     </div>
 
     <script>
-        // --- ข้อมูลดิบ (CSV Data ชุดใหม่ล่าสุด) ---
+        // --- ข้อมูลดิบ (CSV Data) ---
         const rawCSV = `แขวง,หน่วยเลือกตั้งที่,ชื่อสถานที่เลือกตั้ง,ชื่อประธานหน่วย,กปน.1,กปน.2,กปน.3,กปน.4,กปน.5,กปน.6,กปน.7,กปน.8,ตำรวจ1,ตำรวจ2,
 สามเสนใน,1,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวเพ็ญพรรณ การสมพรต,นายธนัท มีคุณ,นายพีรณัฐ ปานตา,นายปริญญา อาดำ,นางสาวณัฐกาญ  สราญชาติ,นายณัฐภูมินทร์ ภิรมย์ใส,นางสาววันศุกร์  จำลอง,นางสาวรุจีรัตน์ อ่อนศรี,นางสาวรุดจิรา ทรัพย์ทอง,ร.ต.ท.โรจนศักดิ์ ภาคมฤค,นางสาวเพชรรัตน์ เถาว์ชารี,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
 สามเสนใน,2,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวอภิชญา พิทักษ์สุริโย,นางสาวธิดารัตน์ พินิจเครดิต,นางสาวสุวรรณี ยิ่งงาม,นางประคอง พิมวัน,นางสาวมุทิตา พฤฒิสาร,นายกำชัย ชากัน,นายพฤตินันท์ บัวจันทร์,นายไวยวัฒน์ ศรีสุขแก้ว,นางสาวพฤษาชาติ ปลื้มกมล,ร.ต.ท.สุบิล กลั่นสุภา,นางสาวจิรประภา เพ็ญศรี,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
@@ -208,7 +211,7 @@
                     }
                 }
                 
-                // เก็บเป็น Array แทนการเชื่อมด้วย "และ"
+                // เก็บเป็น Array เพื่อการรันตัวเลข 1., 2.
                 const police = [];
                 if (columns[12] && columns[12].trim() !== '') police.push(columns[12].trim());
                 if (columns[13] && columns[13].trim() !== '') police.push(columns[13].trim());
@@ -223,7 +226,7 @@
                         location,
                         president,
                         members,
-                        police, // เป็น Array แล้ว
+                        police,
                         mapLink
                     });
                 }
@@ -234,20 +237,20 @@
         function highlightText(text, query) {
             if (!query || !text) return text;
             const regex = new RegExp(`(${query})`, 'gi');
-            return text.replace(regex, '<span class="bg-yellow-200 font-semibold">$1</span>');
+            return text.replace(regex, '<span class="bg-yellow-200 text-purple-900 font-semibold px-0.5 rounded">$1</span>');
         }
 
         function renderFilters() {
             const subDistricts = ['ทั้งหมด', ...new Set(allData.map(d => d.subDistrict))];
             const container = document.getElementById('filterContainer');
-            container.innerHTML = `<i data-lucide="filter" class="text-gray-400 flex-shrink-0 w-4 h-4 mr-2"></i>`;
+            container.innerHTML = `<i data-lucide="filter" class="text-purple-400 flex-shrink-0 w-4 h-4 mr-2"></i>`;
             
             subDistricts.forEach(sd => {
                 const btn = document.createElement('button');
                 btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border ${
                     selectedSubDistrict === sd
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-200'
-                        : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300 hover:text-indigo-600'
+                        ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-200'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50'
                 }`;
                 btn.textContent = sd;
                 btn.onclick = () => {
@@ -277,7 +280,7 @@
                 return matchesSearch && matchesFilter;
             });
 
-            resultCount.innerHTML = `พบข้อมูลจำนวน <span class="font-bold text-indigo-600">${filtered.length}</span> หน่วย`;
+            resultCount.innerHTML = `พบข้อมูลจำนวน <span class="font-bold text-purple-600">${filtered.length}</span> หน่วย`;
 
             if (filtered.length === 0) {
                 container.innerHTML = '';
@@ -296,68 +299,70 @@
 
         function createCardHTML(item) {
             const mapLinkHTML = (item.mapLink && item.mapLink.startsWith('http')) 
-                ? `<a href="${item.mapLink}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()" class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors bg-white px-2 py-1 rounded-lg border border-gray-200"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> แผนที่</a>` 
+                ? `<a href="${item.mapLink}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()" class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-purple-600 transition-colors bg-white px-2 py-1 rounded-lg border border-gray-200 hover:border-purple-200 hover:shadow-sm"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> แผนที่</a>` 
                 : '';
 
-            // ปรับส่วนเจ้าหน้าที่ตำรวจให้วนลูปจาก Array
-            const policeHTML = (item.police && item.police.length > 0) ? `
-                <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100 h-full">
-                    <div class="p-2 bg-white rounded-full shadow-sm flex-shrink-0">
-                        <i data-lucide="shield" class="text-blue-600 w-5 h-5"></i>
-                    </div>
-                    <div class="w-full">
-                        <p class="text-xs text-blue-500 font-bold uppercase mb-1">จนท.รักษาความปลอดภัย</p>
-                        <div class="space-y-1">
-                            ${item.police.map((p, idx) => `
-                            <div class="flex items-start gap-1.5 text-sm">
-                                <span class="text-blue-400 font-mono text-xs pt-0.5">${idx + 1}.</span>
-                                <span class="font-semibold text-gray-900">${highlightText(p, searchQuery)}</span>
-                            </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                </div>` : '';
-
+            // แสดงรายการกรรมการประจำหน่วย
             const membersHTML = item.members.map((member, idx) => `
-                <div class="flex items-start gap-2 text-sm text-gray-700 py-1 border-b border-gray-100 last:border-0 sm:border-0">
-                    <span class="text-gray-400 font-mono text-xs w-5 flex-shrink-0 pt-0.5">${idx + 1}.</span>
+                <div class="flex items-start gap-2 text-sm text-gray-700 py-1.5 border-b border-gray-50 last:border-0 sm:border-0 hover:bg-purple-50/50 rounded px-1 -mx-1 transition-colors">
+                    <span class="text-gray-400 font-mono text-xs w-4 flex-shrink-0 pt-0.5 text-right">${idx + 1}.</span>
                     <span>${highlightText(member, searchQuery)}</span>
                 </div>
             `).join('');
 
+            // แสดงรายการตำรวจ รูปแบบเดียวกับกรรมการประจำหน่วย
+            const policeListHTML = item.police.map((p, idx) => `
+                <div class="flex items-start gap-2 text-sm text-gray-700 py-1.5 border-b border-gray-50 last:border-0 sm:border-0 hover:bg-purple-50/50 rounded px-1 -mx-1 transition-colors">
+                    <span class="text-gray-400 font-mono text-xs w-4 flex-shrink-0 pt-0.5 text-right">${idx + 1}.</span>
+                    <span>${highlightText(p, searchQuery)}</span>
+                </div>
+            `).join('');
+
+            const policeHTML = (item.police && item.police.length > 0) ? `
+                <div class="mt-6 pt-5 border-t border-purple-100/50">
+                    <h4 class="flex items-center gap-2 text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                        <i data-lucide="shield" class="w-4 h-4 text-purple-400"></i> เจ้าหน้าที่รักษาความปลอดภัย (${item.police.length})
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1">
+                        ${policeListHTML}
+                    </div>
+                </div>` : '';
+
             return `
-            <div data-id="${item.id}" class="card-item bg-white rounded-xl shadow-sm hover:shadow-md border border-gray-100 transition-all duration-300 cursor-pointer group overflow-hidden flex flex-col relative mb-2">
-                <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-                    <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
+            <div data-id="${item.id}" class="card-item bg-white rounded-2xl shadow-sm hover:shadow-md border border-purple-100/50 transition-all duration-300 cursor-pointer group overflow-hidden flex flex-col relative mb-2">
+                <div class="p-5 border-b border-purple-50 bg-gradient-to-r from-purple-50/30 to-white">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
                         <div class="flex gap-2">
-                            <span class="px-3 py-1 bg-indigo-600 text-white text-sm font-bold rounded-full shadow-sm">แขวง${item.subDistrict}</span>
-                            <span class="px-3 py-1 bg-white border border-indigo-200 text-indigo-700 text-sm font-bold rounded-full">หน่วยที่ ${item.unit}</span>
+                            <span class="px-3 py-1 bg-purple-600 text-white text-sm font-bold rounded-full shadow-sm">แขวง${item.subDistrict}</span>
+                            <span class="px-3 py-1 bg-white border border-purple-200 text-purple-700 text-sm font-bold rounded-full shadow-sm">หน่วยที่ ${item.unit}</span>
                         </div>
                         ${mapLinkHTML}
                     </div>
-                    <h3 class="font-bold text-gray-900 text-xl group-hover:text-indigo-700 transition-colors">${highlightText(item.location, searchQuery)}</h3>
+                    <h3 class="font-bold text-gray-900 text-xl group-hover:text-purple-700 transition-colors">${highlightText(item.location, searchQuery)}</h3>
                 </div>
                 <div class="p-5">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 items-stretch">
-                        <div class="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100 h-full">
-                            <div class="p-2 bg-white rounded-full shadow-sm flex-shrink-0">
-                                <i data-lucide="user" class="text-indigo-600 w-5 h-5"></i>
+                    <div class="mb-6">
+                        <div class="flex items-start gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100/50 transition-colors group-hover:bg-purple-100/50">
+                            <div class="p-2 bg-white rounded-full shadow-sm flex-shrink-0 text-purple-600">
+                                <i data-lucide="user" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <p class="text-xs text-indigo-500 font-bold uppercase mb-1">ประธานหน่วย</p>
-                                <p class="font-semibold text-gray-900">${highlightText(item.president, searchQuery)}</p>
+                                <p class="text-xs text-purple-500 font-bold uppercase tracking-wide mb-1">ประธานหน่วย</p>
+                                <p class="font-semibold text-gray-900 text-base">${highlightText(item.president, searchQuery)}</p>
                             </div>
                         </div>
-                        ${policeHTML}
                     </div>
+                    
                     <div>
                         <h4 class="flex items-center gap-2 text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">
-                            <i data-lucide="users" class="w-4 h-4"></i> รายชื่อกรรมการประจำหน่วย (${item.members.length})
+                            <i data-lucide="users" class="w-4 h-4 text-purple-400"></i> รายชื่อกรรมการประจำหน่วย (${item.members.length})
                         </h4>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1">
                             ${membersHTML}
                         </div>
                     </div>
+                    
+                    ${policeHTML}
                 </div>
             </div>`;
         }
@@ -369,67 +374,67 @@
             const modalBackdrop = document.getElementById('modalBackdrop');
             const modalContent = document.getElementById('modalContent');
             
-            // เปลี่ยนส่วนเจ้าหน้าที่ตำรวจใน Modal ให้วนลูปจาก Array เช่นกัน
+            // ปรับส่วนเจ้าหน้าที่ตำรวจใน Modal ให้เหมือนกับกรรมการประจำหน่วย
             const policeSection = (item.police && item.police.length > 0) ? `
-                <div class="flex gap-4 items-start bg-blue-50 p-4 rounded-xl border border-blue-100">
-                    <div class="bg-white p-2 rounded-lg shadow-sm flex-shrink-0 mt-1">
-                        <i data-lucide="shield" class="text-blue-600 w-5 h-5"></i>
+                <div class="mt-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="shield" class="text-purple-400 w-4 h-4"></i>
+                        <h3 class="font-semibold text-gray-700 uppercase text-sm tracking-wide">เจ้าหน้าที่รักษาความปลอดภัย (${item.police.length})</h3>
                     </div>
-                    <div class="w-full">
-                        <p class="text-xs text-blue-500 font-bold uppercase tracking-wide mb-2">เจ้าหน้าที่รักษาความปลอดภัย</p>
-                        <div class="space-y-1">
-                            ${item.police.map((p, i) => `
-                            <div class="flex items-start gap-2">
-                                <span class="text-blue-400 font-mono text-sm pt-0.5">${i + 1}.</span>
-                                <span class="font-semibold text-gray-900 text-lg">${p}</span>
-                            </div>
-                            `).join('')}
+                    <div class="bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-100">
+                        ${item.police.map((p, i) => `
+                        <div class="flex gap-3 text-sm text-gray-700 border-b border-gray-100 last:border-0 pb-2.5 last:pb-0">
+                            <span class="text-gray-400 w-6 font-mono text-xs pt-0.5 text-right">${i + 1}.</span>
+                            <span class="font-medium">${p}</span>
                         </div>
+                        `).join('')}
                     </div>
                 </div>` : '';
 
             const mapButton = (item.mapLink && item.mapLink.startsWith('http')) ? `
-                <a href="${item.mapLink}" target="_blank" rel="noreferrer" class="flex items-center justify-center gap-2 w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-colors shadow-lg shadow-indigo-200 mt-6">
-                    <i data-lucide="map-pin" class="w-4 h-4"></i> เปิดแผนที่นำทาง
+                <a href="${item.mapLink}" target="_blank" rel="noreferrer" class="flex items-center justify-center gap-2 w-full py-3.5 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-200 mt-8 hover:shadow-xl hover:-translate-y-0.5">
+                    <i data-lucide="map-pin" class="w-5 h-5"></i> เปิดพิกัดบนแผนที่
                 </a>` : '';
 
             const membersList = item.members.map((m, i) => `
-                <div class="flex gap-3 text-sm text-gray-700 border-b border-gray-100 last:border-0 pb-2 last:pb-0">
-                    <span class="text-gray-400 w-6 font-mono text-xs pt-0.5">${i + 1}.</span>
-                    <span>${m}</span>
+                <div class="flex gap-3 text-sm text-gray-700 border-b border-gray-100 last:border-0 pb-2.5 last:pb-0">
+                    <span class="text-gray-400 w-6 font-mono text-xs pt-0.5 text-right">${i + 1}.</span>
+                    <span class="font-medium">${m}</span>
                 </div>
             `).join('');
 
             modalContent.innerHTML = `
-                <div class="bg-indigo-600 p-6 text-white sticky top-0 z-10 rounded-t-2xl">
-                    <button onclick="closeModal()" class="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors focus:outline-none">
-                        <i data-lucide="x" class="w-5 h-5"></i>
+                <div class="bg-gradient-to-br from-purple-600 to-purple-800 p-6 text-white sticky top-0 z-10 rounded-t-2xl shadow-sm">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors focus:outline-none backdrop-blur-sm">
+                        <i data-lucide="x" class="w-5 h-5 text-white"></i>
                     </button>
-                    <div class="flex items-center gap-2 text-indigo-100 text-sm font-medium mb-1">
-                        <span class="bg-white/20 px-2 py-0.5 rounded text-xs">แขวง${item.subDistrict}</span>
-                        <span>หน่วยที่ ${item.unit}</span>
+                    <div class="flex items-center gap-2 text-purple-100 text-sm font-medium mb-2">
+                        <span class="bg-white/20 px-2.5 py-1 rounded-md text-xs backdrop-blur-sm shadow-sm">แขวง${item.subDistrict}</span>
+                        <span class="bg-white/10 px-2.5 py-1 rounded-md text-xs backdrop-blur-sm">หน่วยที่ ${item.unit}</span>
                     </div>
-                    <h2 class="text-xl font-bold leading-tight">${item.location}</h2>
+                    <h2 class="text-xl font-bold leading-tight mt-1 shadow-sm">${item.location}</h2>
                 </div>
-                <div class="p-6 space-y-6">
-                    <div class="flex gap-4 items-start">
-                        <div class="bg-indigo-100 p-3 rounded-xl flex-shrink-0">
-                            <i data-lucide="user" class="text-indigo-600 w-6 h-6"></i>
+                <div class="p-6">
+                    <div class="flex gap-4 items-start mb-8">
+                        <div class="bg-purple-100 p-3.5 rounded-xl flex-shrink-0 shadow-sm border border-purple-200/50">
+                            <i data-lucide="user" class="text-purple-600 w-6 h-6"></i>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500 font-medium">ประธานหน่วย</p>
+                        <div class="pt-1">
+                            <p class="text-sm text-purple-600/80 font-bold uppercase tracking-wide mb-0.5">ประธานหน่วย</p>
                             <p class="text-lg font-bold text-gray-900">${item.president}</p>
                         </div>
                     </div>
+                    
                     <div>
                         <div class="flex items-center gap-2 mb-3">
-                            <i data-lucide="users" class="text-gray-400 w-4 h-4"></i>
-                            <h3 class="font-semibold text-gray-700">กรรมการประจำหน่วย (${item.members.length})</h3>
+                            <i data-lucide="users" class="text-purple-400 w-4 h-4"></i>
+                            <h3 class="font-semibold text-gray-700 uppercase text-sm tracking-wide">กรรมการประจำหน่วย (${item.members.length})</h3>
                         </div>
                         <div class="bg-gray-50 rounded-xl p-4 space-y-2 border border-gray-100">
                             ${membersList}
                         </div>
                     </div>
+                    
                     ${policeSection}
                     ${mapButton}
                 </div>
@@ -464,34 +469,29 @@
             renderFilters();
             renderCards();
 
-            // Event Listeners
+            // Event Listeners สำหรับการค้นหาและปุ่มกากบาท
             const searchInput = document.getElementById('searchInput');
             const clearSearchBtn = document.getElementById('clearSearchBtn');
 
-            // การทำงานของการพิมพ์ค้นหา
             searchInput.addEventListener('input', (e) => {
                 searchQuery = e.target.value;
-                
-                // แสดงหรือซ่อนปุ่มเคลียร์ข้อความ
                 if (searchQuery.length > 0) {
                     clearSearchBtn.classList.remove('hidden');
                 } else {
                     clearSearchBtn.classList.add('hidden');
                 }
-                
                 renderCards();
             });
 
-            // การทำงานของปุ่มเคลียร์ข้อความ
             clearSearchBtn.addEventListener('click', () => {
                 searchInput.value = '';
                 searchQuery = '';
                 clearSearchBtn.classList.add('hidden');
                 renderCards();
-                searchInput.focus(); // ให้ cursor กลับไปอยู่ที่ช่องค้นหา
+                searchInput.focus();
             });
 
-            // Close modal on backdrop click
+            // ปิด Modal เมื่อคลิกพื้นที่ว่าง
             document.getElementById('modalBackdrop').addEventListener('click', (e) => {
                 if (e.target.id === 'modalBackdrop') closeModal();
             });
