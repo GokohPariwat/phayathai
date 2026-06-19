@@ -88,7 +88,7 @@
                 <i data-lucide="search" class="h-12 w-12 text-gray-300"></i>
             </div>
             <p class="text-gray-500 text-lg">ไม่พบข้อมูลที่ค้นหา</p>
-            <p class="text-gray-400 text-sm">ลองเปลี่ยนคำค้นหา หรือ เลือกแขวงอื่น</p>
+            <p class="text-gray-400 text-sm">ลองเปลี่ยนคำค้นหา หรือ เลือกหมวดหมู่อื่น</p>
         </div>
     </main>
 
@@ -100,6 +100,18 @@
     </div>
 
     <script>
+        // --- ข้อมูลเจ้าหน้าที่ตำรวจประจำเขตพญาไท ---
+        const policeTeamData = [
+            { role: "หัวหน้าชุด", name: "พ.ต.ท.ณรงค์ คงดี", position: "สวป.(ชส.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.อ.แสงสุรีย์ พิมพ์เพชร", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.อ.กิตติพงศ์ ฤทธิขาบ", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.ท.กรณ์ดนัย ทั่งรอด", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.ท.ธีรวุฒิ อาริยะดิษฐ", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.ท.ธีรวีร์ วงษา", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ด.ต.วีระศักดิ์ ละกังถา", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" },
+            { role: "ผู้ปฏิบัติงาน", name: "ส.ต.ต.ชยพล สีหราช", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" }
+        ];
+
         // --- ข้อมูลดิบ (CSV Data) ---
         const rawCSV = `แขวง,หน่วยเลือกตั้งที่,ชื่อสถานที่เลือกตั้ง,ชื่อประธานหน่วย,กปน.1,กปน.2,กปน.3,กปน.4,กปน.5,กปน.6,กปน.7,กปน.8,ตำรวจ1,ตำรวจ2,
 สามเสนใน,1,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวเพ็ญพรรณ การสมพรต,นายธนัท มีคุณ,นายพีรณัฐ ปานตา,นายปริญญา อาดำ,นางสาวณัฐกาญ  สราญชาติ,นายณัฐภูมินทร์ ภิรมย์ใส,นางสาววันศุกร์  จำลอง,นางสาวรุจีรัตน์ อ่อนศรี,นางสาวรุดจิรา ทรัพย์ทอง,ร.ต.ท.โรจนศักดิ์ ภาคมฤค,นางสาวเพชรรัตน์ เถาว์ชารี,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
@@ -241,20 +253,33 @@
         }
 
         function renderFilters() {
+            // ดึงชื่อแขวงจากข้อมูล CSV ปกติ
             const subDistricts = ['ทั้งหมด', ...new Set(allData.map(d => d.subDistrict))];
+            
+            // เพิ่ม "ตำรวจประจำเขต" เข้าไปเป็นแท็บสุดท้าย
+            const tabs = [...subDistricts, 'จนท.ตำรวจประจำเขต'];
+
             const container = document.getElementById('filterContainer');
             container.innerHTML = `<i data-lucide="filter" class="text-purple-400 flex-shrink-0 w-4 h-4 mr-2"></i>`;
             
-            subDistricts.forEach(sd => {
+            tabs.forEach(tabName => {
                 const btn = document.createElement('button');
                 btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border ${
-                    selectedSubDistrict === sd
+                    selectedSubDistrict === tabName
                         ? 'bg-purple-600 text-white border-purple-600 shadow-md shadow-purple-200'
                         : 'bg-white text-gray-600 border-gray-200 hover:border-purple-300 hover:text-purple-600 hover:bg-purple-50'
                 }`;
-                btn.textContent = sd;
+                
+                // ถ้าเป็นแท็บตำรวจ อาจจะให้สีพิเศษนิดหน่อยเวลาไม่ได้ถูกเลือก
+                if (tabName === 'จนท.ตำรวจประจำเขต' && selectedSubDistrict !== tabName) {
+                    btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border bg-blue-50/50 text-blue-700 border-blue-200 hover:border-blue-400 hover:text-blue-800 hover:bg-blue-100`;
+                } else if (tabName === 'จนท.ตำรวจประจำเขต' && selectedSubDistrict === tabName) {
+                    btn.className = `px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all border bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200`;
+                }
+
+                btn.textContent = tabName;
                 btn.onclick = () => {
-                    selectedSubDistrict = sd;
+                    selectedSubDistrict = tabName;
                     renderFilters();
                     renderCards();
                 };
@@ -267,36 +292,89 @@
             const container = document.getElementById('cardContainer');
             const noResults = document.getElementById('noResults');
             const resultCount = document.getElementById('resultCount');
-            
-            const filtered = allData.filter(item => {
-                const matchesSearch = 
-                    item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    item.president.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    item.members.some(m => m.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    (item.police && item.police.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()))) ||
-                    item.unit.toString().includes(searchQuery);
-                
-                const matchesFilter = selectedSubDistrict === 'ทั้งหมด' || item.subDistrict === selectedSubDistrict;
-                return matchesSearch && matchesFilter;
-            });
 
-            resultCount.innerHTML = `พบข้อมูลจำนวน <span class="font-bold text-purple-600">${filtered.length}</span> หน่วย`;
+            // กรณีคลิกแท็บตำรวจประจำเขต
+            if (selectedSubDistrict === 'จนท.ตำรวจประจำเขต') {
+                const filteredPolice = policeTeamData.filter(p => 
+                    p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    p.position.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    p.role.toLowerCase().includes(searchQuery.toLowerCase())
+                );
 
-            if (filtered.length === 0) {
-                container.innerHTML = '';
-                noResults.classList.remove('hidden');
-            } else {
-                noResults.classList.add('hidden');
-                container.innerHTML = filtered.map(item => createCardHTML(item)).join('');
+                resultCount.innerHTML = `พบเจ้าหน้าที่จำนวน <span class="font-bold text-blue-600">${filteredPolice.length}</span> นาย`;
+
+                if (filteredPolice.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    container.innerHTML = createPoliceCardHTML(filteredPolice);
+                }
+            } 
+            // กรณีคลิกแท็บปกติ (ข้อมูล กปน.)
+            else {
+                const filtered = allData.filter(item => {
+                    const matchesSearch = 
+                        item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        item.president.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        item.members.some(m => m.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                        (item.police && item.police.some(p => p.toLowerCase().includes(searchQuery.toLowerCase()))) ||
+                        item.unit.toString().includes(searchQuery);
+                    
+                    const matchesFilter = selectedSubDistrict === 'ทั้งหมด' || item.subDistrict === selectedSubDistrict;
+                    return matchesSearch && matchesFilter;
+                });
+
+                resultCount.innerHTML = `พบข้อมูลจำนวน <span class="font-bold text-purple-600">${filtered.length}</span> หน่วย`;
+
+                if (filtered.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                } else {
+                    noResults.classList.add('hidden');
+                    container.innerHTML = filtered.map(item => createCardHTML(item)).join('');
+                }
             }
             
-            document.querySelectorAll('.card-item').forEach(card => {
-                card.addEventListener('click', () => openModal(card.dataset.id));
-            });
+            // เพิ่ม Event Listner ให้กับการ์ดข้อมูลปกติ
+            if (selectedSubDistrict !== 'จนท.ตำรวจประจำเขต') {
+                document.querySelectorAll('.card-item').forEach(card => {
+                    card.addEventListener('click', () => openModal(card.dataset.id));
+                });
+            }
 
             lucide.createIcons();
         }
 
+        // ฟังก์ชันสร้างหน้าการ์ดสำหรับตำรวจประจำเขต
+        function createPoliceCardHTML(policeList) {
+            let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">';
+            
+            policeList.forEach((p, idx) => {
+                const isHead = p.role === "หัวหน้าชุด";
+                const icon = isHead ? "star" : "shield-check";
+                const badgeColor = isHead ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600";
+                const textColor = isHead ? "text-amber-600" : "text-blue-500";
+                const borderColor = isHead ? "border-amber-200" : "border-blue-100";
+                
+                html += `
+                <div class="bg-white rounded-2xl shadow-sm border ${borderColor} p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="p-3.5 ${badgeColor} rounded-full flex-shrink-0">
+                        <i data-lucide="${icon}" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs ${textColor} font-bold uppercase tracking-wide mb-0.5">${highlightText(p.role, searchQuery)}</p>
+                        <p class="font-bold text-gray-900 text-lg mb-1">${highlightText(p.name, searchQuery)}</p>
+                        <p class="text-sm text-gray-500 flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i>${highlightText(p.position, searchQuery)}</p>
+                    </div>
+                </div>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // ฟังก์ชันสร้างหน้าการ์ดสำหรับกรรมการหน่วย (กปน.)
         function createCardHTML(item) {
             const mapLinkHTML = (item.mapLink && item.mapLink.startsWith('http')) 
                 ? `<a href="${item.mapLink}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()" class="flex items-center gap-1 text-xs font-medium text-gray-500 hover:text-purple-600 transition-colors bg-white px-2 py-1 rounded-lg border border-gray-200 hover:border-purple-200 hover:shadow-sm"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> แผนที่</a>` 
