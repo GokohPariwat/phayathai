@@ -89,7 +89,7 @@
                     <i data-lucide="bell-ring" class="w-7 h-7 text-white"></i>
                 </div>
                 <h2 class="text-2xl font-bold tracking-wide">แจ้งกำหนดการ</h2>
-                <p class="text-purple-100 mt-1 text-sm font-medium">วันอบรมเจ้าหน้าที่ประจำหน่วยเลือกตั้ง</p>
+                <p class="text-purple-100 mt-1 text-sm font-medium">วันอบรมเจ้าพนักงานผู้ดำเนินการเลือกตั้ง</p>
             </div>
             <div class="p-6 space-y-5">
                 <div class="flex items-start gap-4">
@@ -146,8 +146,8 @@
             { role: "ผู้ปฏิบัติงาน", name: "ส.ต.ต.ชยพล สีหราช", position: "ผบ.หมู่ (ป.) สน.บางซื่อ" }
         ];
 
-        // --- ข้อมูลดิบ (CSV Data) ---
-       const rawCSV = `แขวง,หน่วยเลือกตั้งที่,ชื่อสถานที่เลือกตั้ง,ชื่อประธานหน่วย,กปน.1,กปน.2,กปน.3,กปน.4,กปน.5,กปน.6,กปน.7,กปน.8,ตำรวจ1,ตำรวจ2,
+        // --- ข้อมูลดิบ (CSV Data ชุดใหม่ล่าสุด) ---
+        const rawCSV = `แขวง,หน่วยเลือกตั้งที่,ชื่อสถานที่เลือกตั้ง,ชื่อประธานหน่วย,กปน.1,กปน.2,กปน.3,กปน.4,กปน.5,กปน.6,กปน.7,กปน.8,ตำรวจ1,ตำรวจ2,
 สามเสนใน,1,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวเพ็ญพรรณ การสมพรต,นายธนัท มีคุณ,นายพีรณัฐ ปานตา,นายปริญญา อาดำ,นางสาวณัฐกาญ  สราญชาติ,นายณัฐภูมินทร์ ภิรมย์ใส,นางสาววันศุกร์  จำลอง,นางสาวรุจีรัตน์ อ่อนศรี,นางสาวรุดจิรา ทรัพย์ทอง,ร.ต.ท.โรจนศักดิ์ ภาคมฤค,นางสาวเพชรรัตน์ เถาว์ชารี,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
 สามเสนใน,2,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวอภิชญา พิทักษ์สุริโย,นางสาวธิดารัตน์ พินิจเครดิต,นางสาวสุวรรณี ยิ่งงาม,นางประคอง พิมวัน,นางสาวมุทิตา พฤฒิสาร,นายกำชัย ชากัน,นายพฤตินันท์ บัวจันทร์,นายไวยวัฒน์ ศรีสุขแก้ว,นางสาวพฤษาชาติ ปลื้มกมล,ร.ต.ท.สุบิล กลั่นสุภา,นางสาวจิรประภา เพ็ญศรี,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
 สามเสนใน,3,ลานจอดรถ บิ๊กซีซูเปอร์เซ็นเตอร์ สาขาสะพานควาย,นางสาวกันยารัตน์ ชินวงศ,นายธีรภัทร ชินวงศ,นายชัยวุฒิ สุขอร่าม,นางสาววิชชุดา พรหมปรีดี,นายณัฏฐกิตติ์ เสียดขุนทด,นายธนากร สาตร์นอก,นางสาวกรทอง เวชพันธุ์,นางสาวสุพัฒตรา พัฒน์ธิพงษ์,นายณัฐพงษ์ บูระพา,ร.ต.ท.พงษ์เรืองรอง คำมงคล,ว่าที่ร้อยตรีคมกริช แสนณรงค์,https://maps.app.goo.gl/yB8wcr8VwnMnNTD8A
@@ -595,16 +595,22 @@
             renderFilters();
             renderCards();
 
-            // แสดง Pop-up แจ้งกำหนดการเมื่อโหลดหน้าเว็บ
-            const annModal = document.getElementById('announcementModal');
-            const annContent = document.getElementById('announcementContent');
-            if (annModal && annContent) {
-                annModal.classList.remove('hidden');
-                setTimeout(() => {
-                    annModal.classList.remove('opacity-0');
-                    annContent.classList.remove('scale-95');
-                    annContent.classList.add('scale-100');
-                }, 50); // ดีเลย์เล็กน้อยเพื่อให้ CSS Transition ทำงาน
+            // แสดง Pop-up แจ้งกำหนดการเมื่อโหลดหน้าเว็บ (หากยังไม่เกินกำหนดเวลา)
+            // เวลาเป้าหมาย: วันที่ 21 มิ.ย. 2569 เวลา 12:00:00 (เวลาไทย UTC+7)
+            const targetDate = new Date('2026-06-21T12:00:00+07:00');
+            const currentDate = new Date();
+
+            if (currentDate < targetDate) {
+                const annModal = document.getElementById('announcementModal');
+                const annContent = document.getElementById('announcementContent');
+                if (annModal && annContent) {
+                    annModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        annModal.classList.remove('opacity-0');
+                        annContent.classList.remove('scale-95');
+                        annContent.classList.add('scale-100');
+                    }, 50); // ดีเลย์เล็กน้อยเพื่อให้ CSS Transition ทำงาน
+                }
             }
 
             // Event Listeners สำหรับการค้นหาและปุ่มกากบาท
